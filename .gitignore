@@ -1,1 +1,4 @@
-.vs\
+# ignore bin & vs
+.vs/
+bin/
+bin-int/
