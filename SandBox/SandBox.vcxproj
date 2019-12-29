@@ -58,6 +58,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>HZ_PLATFORM_WINDOWS;</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)Hazel\src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -70,15 +72,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>HZ_PLATFORM_WINDOWS;</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)Hazel\src\</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hazel\Hazel.vcxproj">
-      <Project>{7664b0ee-f2ce-49f2-bdb2-f9c6a00020d5}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\SandboxApp.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
