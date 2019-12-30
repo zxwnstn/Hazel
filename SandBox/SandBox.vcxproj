@@ -79,6 +79,11 @@
   <ItemGroup>
     <ClCompile Include="src\SandboxApp.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hazel\Hazel.vcxproj">
+      <Project>{7664b0ee-f2ce-49f2-bdb2-f9c6a00020d5}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
