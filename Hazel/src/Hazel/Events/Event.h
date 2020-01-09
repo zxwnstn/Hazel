@@ -43,7 +43,7 @@ namespace Hazel {
 		inline bool IsInCategory(EventCategory category) {
 			return GetCategoryFlags() & category;
 		}
-	protected:
+	public:
 		bool m_Handled = false;
 	};
 
