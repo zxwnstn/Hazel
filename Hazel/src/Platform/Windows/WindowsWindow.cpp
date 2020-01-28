@@ -80,7 +80,7 @@ namespace Hazel {
 
 			switch (action) {
 			case GLFW_PRESS:{
-				keyPressedEvent event(key, 0);
+				KeyPressedEvent event(key, 0);
 				data.EventCallback(event);
 			}
 				break;
@@ -90,11 +90,18 @@ namespace Hazel {
 			}
 				break;
 			case GLFW_REPEAT: {
-				keyPressedEvent event(key, 1);
+				KeyPressedEvent event(key, 1);
 				data.EventCallback(event);
 			}
 				break;
 			}
+		});
+
+		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			KeyTypedEvent event(keycode);
+			data.EventCallback(event);
 		});
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
@@ -115,10 +122,11 @@ namespace Hazel {
 			}
 		});
 
-		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset) {
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			MouseScrolledEvent event((float)xoffset, (float)yoffset);
+			MouseScrolledEvent event((float)xOffset, (float)yOffset);
+			data.EventCallback(event);
 		});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos) {
@@ -127,7 +135,6 @@ namespace Hazel {
 			MouseMovedEvent event((float)xPos, (float)yPos);
 			data.EventCallback(event);
 		});
-
 	}
 
 	void WindowsWindow::Shutdown()
