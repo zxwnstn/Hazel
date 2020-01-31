@@ -69,9 +69,8 @@ project "Hazel"
 
 		postbuildcommands
 		{
-			("{Copy} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
+			("{Copy} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
 		}
-	
 	filter "configurations:Debug"
 		defines "HZ_DEBUG"
 		runtime "Debug"
