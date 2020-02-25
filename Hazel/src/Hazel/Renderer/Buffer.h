@@ -78,8 +78,8 @@ namespace Hazel {
 			CalculateOffsetAndStride();
 		}
 
-		inline const std::vector<BufferElement> GetElement() { return m_Elements; }
 		inline uint32_t GetStride() const { return m_Stride; }
+		inline const std::vector<BufferElement>& GetElements() const { return m_Elements; }
 
 		std::vector<BufferElement>::iterator begin() { return m_Elements.begin(); }
 		std::vector<BufferElement>::iterator end() { return m_Elements.end(); }
@@ -123,6 +123,7 @@ namespace Hazel {
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
+
 		virtual uint32_t GetCount() const = 0;
 
 		static IndexBuffer* Create(uint32_t* indices, uint32_t count);
