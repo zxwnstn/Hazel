@@ -2,14 +2,15 @@
 #include "Application.h"
 
 #include "Hazel/Log.h"
-#include <glad/glad.h>
+
+#include "Hazel/Renderer/Renderer.h"
 
 #include "Input.h"
 
 namespace Hazel {
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
-	
+
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
@@ -18,7 +19,7 @@ namespace Hazel {
 		s_Instance = this;
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
-		
+
 		m_ImGuilayer = new ImGuiLayer;
 		PushOverlay(m_ImGuilayer);
 
@@ -31,8 +32,8 @@ namespace Hazel {
 			0.5f,  -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
 			0.0f,   0.5f, 0.0f, 0.8f, 0.7f, 0.2f, 1.0f
 		};
-		unsigned int indices[3] = { 
-			0, 1, 2 
+		unsigned int indices[3] = {
+			0, 1, 2
 		};
 		//3. Create VertexBuffer
 		std::shared_ptr<VertexBuffer> vertexBuffer;
@@ -40,7 +41,7 @@ namespace Hazel {
 		vertexBuffer->SetLayout({
 			{ShaderDataType::Float3, "a_Position"},
 			{ShaderDataType::Float4, "a_Color"},
-		});
+			});
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 		//4. Create IndexBuffer
 		std::shared_ptr<IndexBuffer> indexBuffer;
@@ -89,15 +90,15 @@ namespace Hazel {
 			 0.75f,   0.75f, 0.0f,
 			-0.75f,   0.75f, 0.0f
 		};
-		unsigned int squreIndices[6] = { 
-			0, 1, 2, 2, 3, 0 
+		unsigned int squreIndices[6] = {
+			0, 1, 2, 2, 3, 0
 		};
 		//3. Create VertexBuffer
 		std::shared_ptr<VertexBuffer> squareVB;
 		squareVB.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 		squareVB->SetLayout({
 			{ShaderDataType::Float3, "a_Position"},
-		});
+			});
 		m_SqaureVA->AddVertexBuffer(squareVB);
 		//4. Create IndexBuffer
 		std::shared_ptr<IndexBuffer> squreIB;
@@ -167,16 +168,18 @@ namespace Hazel {
 	{
 		while (m_Running)
 		{
-			glClearColor(0.1f, 0.1f, 0.1f, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+			RenderCommand::Clear();
+
+			Renderer::BeginScene();
 
 			m_BlueShader->Bind();
-			m_SqaureVA->Bind();
-			glDrawElements(GL_TRIANGLES, m_SqaureVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::Submit(m_SqaureVA);
 
 			m_Shader->Bind();
-			m_VertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::Submit(m_VertexArray);
+
+			Renderer::EndScene();
 
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();

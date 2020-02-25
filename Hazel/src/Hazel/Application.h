@@ -13,7 +13,6 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 
-
 namespace Hazel {
 
 	class HAZEL_API Application
