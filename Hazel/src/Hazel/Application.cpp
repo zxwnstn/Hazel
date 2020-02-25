@@ -22,50 +22,31 @@ namespace Hazel {
 		m_ImGuilayer = new ImGuiLayer;
 		PushOverlay(m_ImGuilayer);
 
+		//triangle
+		//1. Create VertexArray
 		m_VertexArray.reset(VertexArray::Create());
-
+		//2. define vertices, Indices
 		float vertices[3 * 7] = {
 			-0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
 			0.5f,  -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
 			0.0f,   0.5f, 0.0f, 0.8f, 0.7f, 0.2f, 1.0f
 		};
-
+		unsigned int indices[3] = { 
+			0, 1, 2 
+		};
+		//3. Create VertexBuffer
 		std::shared_ptr<VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-		BufferLayout layout = {
+		vertexBuffer->SetLayout({
 			{ShaderDataType::Float3, "a_Position"},
 			{ShaderDataType::Float4, "a_Color"},
-		};
-		vertexBuffer->SetLayout(layout);
+		});
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
-
-		unsigned int indices[3] = { 0, 1, 2 };
+		//4. Create IndexBuffer
 		std::shared_ptr<IndexBuffer> indexBuffer;
 		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
-
-		m_SqaureVA.reset(VertexArray::Create());
-		float squareVertices[3 * 4] = {
-			-0.75f,	 -0.75f, 0.0f,
-			 0.75f,  -0.75f, 0.0f,
-			 0.75f,   0.75f, 0.0f,
-			-0.75f,   0.75f, 0.0f
-		};
-		
-		std::shared_ptr<VertexBuffer> squareVB;
-		squareVB.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-		squareVB->SetLayout({
-			{ShaderDataType::Float3, "a_Position"},
-		});
-		m_SqaureVA->AddVertexBuffer(squareVB);
-		
-
-		unsigned int squreIndices[6] = { 0, 1, 2, 2, 3, 0 };
-		std::shared_ptr<IndexBuffer> squreIB;
-		squreIB.reset(IndexBuffer::Create(squreIndices, sizeof(squreIndices) / sizeof(uint32_t)));
-		m_SqaureVA->SetIndexBuffer(squreIB);
-
-
+		//5. define shader
 		std::string vertexSrc = R"(
 			#version 330 core
 
@@ -98,6 +79,31 @@ namespace Hazel {
 		)";
 		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));
 
+		//Square
+		//1. Create VertexArray
+		m_SqaureVA.reset(VertexArray::Create());
+		//2. define vertices, Indices
+		float squareVertices[3 * 4] = {
+			-0.75f,	 -0.75f, 0.0f,
+			 0.75f,  -0.75f, 0.0f,
+			 0.75f,   0.75f, 0.0f,
+			-0.75f,   0.75f, 0.0f
+		};
+		unsigned int squreIndices[6] = { 
+			0, 1, 2, 2, 3, 0 
+		};
+		//3. Create VertexBuffer
+		std::shared_ptr<VertexBuffer> squareVB;
+		squareVB.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		squareVB->SetLayout({
+			{ShaderDataType::Float3, "a_Position"},
+		});
+		m_SqaureVA->AddVertexBuffer(squareVB);
+		//4. Create IndexBuffer
+		std::shared_ptr<IndexBuffer> squreIB;
+		squreIB.reset(IndexBuffer::Create(squreIndices, sizeof(squreIndices) / sizeof(uint32_t)));
+		m_SqaureVA->SetIndexBuffer(squreIB);
+		//5. define shader
 		std::string blueShadervertexSrc = R"(
 			#version 330 core
 
@@ -123,10 +129,9 @@ namespace Hazel {
 				color = vec4(0.2, 0.3, 0.8, 1.0);
 			}
 		)";
-
 		m_BlueShader.reset(new Shader(blueShadervertexSrc, blueShaderFragmentSrc));
-	}
 
+	}
 
 	Application::~Application()
 	{
