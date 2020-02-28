@@ -2,6 +2,8 @@
 
 #include "imgui/imgui.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 class ExampleLayer
 	: public Hazel::Layer {
 public:
@@ -40,6 +42,7 @@ public:
 			layout(location = 1) in vec4 a_Color;			
 			
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 v_Position;			
 			out vec4 v_Color;			
@@ -48,7 +51,7 @@ public:
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
 		std::string fragmentSrc = R"(
@@ -72,10 +75,10 @@ public:
 		m_SqaureVA.reset(Hazel::VertexArray::Create());
 		//2. define vertices, Indices
 		float squareVertices[3 * 4] = {
-			-0.75f,	 -0.75f, 0.0f,
-			 0.75f,  -0.75f, 0.0f,
-			 0.75f,   0.75f, 0.0f,
-			-0.75f,   0.75f, 0.0f
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.5f,  0.5f, 0.0f,
+			-0.5f,  0.5f, 0.0f
 		};
 		unsigned int squreIndices[6] = {
 			0, 1, 2, 2, 3, 0
@@ -92,34 +95,37 @@ public:
 		squreIB.reset(Hazel::IndexBuffer::Create(squreIndices, sizeof(squreIndices) / sizeof(uint32_t)));
 		m_SqaureVA->SetIndexBuffer(squreIB);
 		//5. define shader
-		std::string blueShadervertexSrc = R"(
+		std::string flatColorShadervertexSrc = R"(
 			#version 330 core
 
 			layout(location = 0) in vec3 a_Position;			
 			
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 v_Position;			
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
-		std::string blueShaderFragmentSrc = R"(
+		std::string flatColorShaderFragmentSrc = R"(
 			#version 330 core
 
 			layout(location = 0) out vec4 color;			
 			
 			in vec3 v_Position;			
+			
+			uniform vec4 u_Color;
 
 			void main()
 			{
-				color = vec4(0.2, 0.3, 0.8, 1.0);
+				color = u_Color;
 			}
 		)";
-		m_BlueShader.reset(new Hazel::Shader(blueShadervertexSrc, blueShaderFragmentSrc));
+		m_flatColorShader.reset(new Hazel::Shader(flatColorShadervertexSrc, flatColorShaderFragmentSrc));
 
 	}
 
@@ -146,13 +152,35 @@ public:
 		m_Camera.SetPosition(m_CameraPosition);
 		m_Camera.SetRotation(m_CameraRotation);
 		
+		static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
+		glm::vec4 redColor(0.8f, 0.2f, 0.3f, 1.0);
+		glm::vec4 blueColor(0.2f, 0.3f, 0.8f, 1.0);
+
+		/*Hazel::MaterialRef material = new Hazel::Materal(m_flatColorShader);
+		Hazel::MaterialInstanceRef mi = new Hazel::MaterialInstance(material);
+
+		mi->SetValue("u_Color", redColor);
+		mi->SetTexture("u_AlbedoMap", texture);
+		squareMesh->SetMaterial(mi);*/
 
 		Hazel::Renderer::BeginScene(m_Camera);
-		Hazel::Renderer::Submit(m_BlueShader, m_SqaureVA);
-
+		for (int y = 0; y < 20; ++y)
+		{
+			for (int x = 0; x < 20; ++x)
+			{
+				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+				if (x % 2 == 0)
+					m_flatColorShader->UploadUniformFloat4("u_Color", redColor);
+				else
+					m_flatColorShader->UploadUniformFloat4("u_Color", blueColor);
+				Hazel::Renderer::Submit(m_flatColorShader, m_SqaureVA, transform);
+			}
+		}
 		Hazel::Renderer::Submit(m_Shader, m_VertexArray);
-		Hazel::Renderer::EndScene();
 
+		Hazel::Renderer::EndScene();
 	}
 
 	void OnImGuiRender() override
@@ -167,7 +195,7 @@ private:
 	std::shared_ptr<Hazel::Shader> m_Shader;
 	std::shared_ptr<Hazel::VertexArray> m_VertexArray;
 
-	std::shared_ptr<Hazel::Shader> m_BlueShader;
+	std::shared_ptr<Hazel::Shader> m_flatColorShader;
 	std::shared_ptr<Hazel::VertexArray> m_SqaureVA;
 
 	Hazel::OthographicCamera m_Camera;
