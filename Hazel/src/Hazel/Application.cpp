@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Hazel/Log.h"
+#include "GLFW/glfw3.h"
 
 namespace Hazel {
 
@@ -53,9 +54,12 @@ namespace Hazel {
 	{
 		while (m_Running)
 		{
-			
+			float time = (float)glfwGetTime();
+			Timestep timestep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
+
 			for (Layer* layer : m_LayerStack)
-				layer->OnUpdate();
+				layer->OnUpdate(timestep);
 
 			m_ImGuilayer->Begin();
 			for (Layer* layer : m_LayerStack)
