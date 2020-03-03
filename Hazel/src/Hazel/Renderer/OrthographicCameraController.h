@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hazel/Renderer/OthographicCamera.h"
+#include "Hazel/Renderer/OrthographicCamera.h"
 #include "Hazel/Core/Timestep.h"
 
 #include "Hazel/Events/ApplicationEvent.h"
@@ -8,16 +8,16 @@
 
 namespace Hazel {
 
-	class OthographicCameraController
+	class OrthographicCameraController
 	{
 	public:
-		OthographicCameraController(float aspectRatio, bool rotation = false);
+		OrthographicCameraController(float aspectRatio, bool rotation = false);
 
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
 
-		OthographicCamera& GetCamera() { return m_Camera; }
-		const OthographicCamera& GetCamera() const { return m_Camera; }
+		OrthographicCamera& GetCamera() { return m_Camera; }
+		const OrthographicCamera& GetCamera() const { return m_Camera; }
 
 		float GetZoomLevel() const { return m_ZoomLevel; }
 		void SetZoomLevel(float level) { m_ZoomLevel = level; }
@@ -27,7 +27,7 @@ namespace Hazel {
 	private:
 		float m_AspectRatio;
 		float m_ZoomLevel = 1.0f;
-		OthographicCamera m_Camera;
+		OrthographicCamera m_Camera;
 
 		bool m_Rotation = false;
 
