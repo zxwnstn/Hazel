@@ -153,8 +153,11 @@ namespace Hazel {
 		}
 
 		// Always detach shaders after a successful link.
-		for (auto id : glShaderIDs)
+		for (auto id : glShaderIDs) 
+		{
 			glDetachShader(program, id);
+			glDeleteShader(id);
+		}
 	}
 
 	OpenGLShader::~OpenGLShader()

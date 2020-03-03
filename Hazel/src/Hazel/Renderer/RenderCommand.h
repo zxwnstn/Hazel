@@ -32,6 +32,6 @@ namespace Hazel {
 			s_RendererAPI->SetViewPort(x, y, width, height);
 		}
 	private:
-		static RendererAPI* s_RendererAPI;
+		static Scope<RendererAPI> s_RendererAPI;
 	};
 }
