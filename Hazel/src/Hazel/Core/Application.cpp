@@ -15,6 +15,8 @@ namespace Hazel {
 
 	Application::Application()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		HZ_CORE_ASSERT(!s_Instance, "Application arleady exist!");
 		s_Instance = this;
 		m_Window = std::unique_ptr<Window>(Window::Create());
@@ -28,10 +30,15 @@ namespace Hazel {
 
 	Application::~Application()
 	{
+		HZ_PROFILE_FUNCTION();
+
+		Renderer::Shutdown();
 	}
 
 	void Application::OnEvent(Event & e)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(e);
 
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
@@ -46,33 +53,50 @@ namespace Hazel {
 
 	void Application::PushLayer(Layer * layer)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer * layer)
 	{
+		HZ_PROFILE_FUNCTION();
+
 		m_LayerStack.PushOverlay(layer);
 		layer->OnAttach();
 	}
 
 	void Application::Run()
 	{
+		HZ_PROFILE_FUNCTION();
+
 		while (m_Running)
 		{
+			HZ_PROFILE_SCOPE("RunLoop");
+
 			float time = (float)glfwGetTime();
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
 			if (!m_Minimized)
 			{
-				for (Layer* layer : m_LayerStack)
-					layer->OnUpdate(timestep);
+				{
+					HZ_PROFILE_SCOPE("LayerStack OnUpdate");
+
+					for (Layer* layer : m_LayerStack)
+						layer->OnUpdate(timestep);
+				}
+
+				m_ImGuilayer->Begin();
+				{
+					HZ_PROFILE_SCOPE("LayerStack OnImGuiRender");
+
+					for (Layer* layer : m_LayerStack)
+						layer->OnImGuiRender();
+				}
+				m_ImGuilayer->End();
 			}
-			m_ImGuilayer->Begin();
-			for (Layer* layer : m_LayerStack)
-				layer->OnImGuiRender();
-			m_ImGuilayer->End();
 
 			m_Window->OnUpdate();
 		}
@@ -86,6 +110,7 @@ namespace Hazel {
 
 	bool Application::OnWindowResize(WindowResizeEvent & e)
 	{
+		HZ_PROFILE_SCOPE("RunLoop");
 
 		if (e.GetWidth() == 0 || e.GetHeight() == 0)
 		{
