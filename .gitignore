@@ -7,3 +7,6 @@ bin-int/
 *.vcxproj.filters
 *.vcxproj.user
 SandBox/imgui.ini
+SandBox/HazelProfile-Runtime.json
+SandBox/HazelProfile-Shutdown.json
+SandBox/HazelProfile-Startup.json
